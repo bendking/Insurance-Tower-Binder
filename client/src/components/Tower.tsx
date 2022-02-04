@@ -12,23 +12,38 @@ import {
     IconButton,
 } from "@chakra-ui/react";
 
-function Tower() {
-    const [tower, setTower] = useState([])
+export default function Tower() {
+    const towerUrl = '127.0.0.1:5000/tower'
 
-    const getTower = () => {
-        // Return tower from server
+    const [error, setError] = useState('')
+    const [isLoaded, setIsLoaded] = useState(false)
+    const [tower, setTower] = useState({})
+    
+    useEffect(() => {
+        getTower()
+    }, [])
+    
+    const getTower = async () => {
+        const response = await fetch(towerUrl, {headers: {"Content-Type": "application/json"}})
+
+        if (response.ok) {
+            const tower = await response.json()
+            setTower(tower)
+            setIsLoaded(true)
+        } else {
+            const error = await response.text()
+            setError(error)
+            setIsLoaded(true)
+        }
     }
 
     const saveTower = (tower: Array<string>) => {
         // Save tower in server
     }
 
-    useEffect(() => {
-        const tower = getTower()
-        setTower(tower)
-    }, [])
-
-    const 
+    console.log(`Error: ${error}`)
+    console.log(`Loading: ${isLoaded}`)
+    console.log(`Tower: ${tower}`)
 
     return (
         <HStack>
