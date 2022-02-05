@@ -15,12 +15,12 @@ router
             console.error(err)
             res.status(500).send('Something went wrong. Failed to get tower.')
         }
-    
+
     })
     .put((req, res) => {
         try {
-            const tower = req.body.tower
-            towerController.saveTower(tower)
+            towerController.saveTower(req.body)
+            res.sendStatus(200)
         } catch (err) {
             console.error(err)
             res.status(500).send('Something went wrong. Failed to update tower.')
