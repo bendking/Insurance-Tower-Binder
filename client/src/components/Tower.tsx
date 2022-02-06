@@ -13,9 +13,10 @@ export interface LayerType {
 }
 
 export default function Tower() {
+  // In a user-facing app I would have stored values such as this in a configuration file.
   const towerUrl = "http://localhost:5000/tower";
 
-  // In a user-facing app, I would have made it possible to dynamically add & remove layers
+  // In case no tower is saved on the server.
   const initialState = {
     name: "Client Tower",
     layers: [
@@ -44,9 +45,9 @@ export default function Tower() {
     };
 
     try {
+			// If no tower exists, the server returns 204, so we check for 200.
       const response = await fetch(towerUrl, requestOptions);
-      const tower = JSON.parse(await response.json());
-      setTower(tower);
+			response.status === 200 && setTower(await response.json())
       setIsLoaded(true);
     } catch (error: any) {
       console.error(error);
@@ -55,7 +56,7 @@ export default function Tower() {
     }
   };
 
-  // In a user-facing application I would have added feedback indicating when the tower was saving, and had
+  // In a user-facing app I would have added feedback indicating when the tower was saving, and had
   // shown an alert indicating whether it had succesfully saved or not (using the Alert ChakraUI component).
   const saveTower = async (tower: TowerType) => {
     const requestOptions = {
@@ -71,6 +72,11 @@ export default function Tower() {
     }
   };
 
+  // In a user-facing app I would have made it possible to dynamically add & remove layers and to change the tower's name.
+  // const addLayer = () => ...
+  // const removeLayer = () => ...
+  // const handleNameChange = () => ...
+
   const handleLayerChange = (i: number) => (layer: LayerType) => {
     setTower((prevTower) => {
       const newLayers = [...prevTower.layers];
@@ -83,7 +89,7 @@ export default function Tower() {
     });
   };
 
-  // In a user-facing app, I would have gotten the carrier options from the server.
+  // In a user-facing app, I would have gotten the carrier options from the server instead of hard-coding them.
   const defaultCarrierOptions = ["AIG", "Direct", "Phoenix", "Clal", "Harel"];
   const chosenCarrierOptions = new Set(tower.layers.map((layer) => layer.carrier));
   const remainingCarrierOptions = defaultCarrierOptions.filter(
@@ -101,13 +107,13 @@ export default function Tower() {
   ));
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <Heading>Failed to load tower: {error.message}</Heading>;
   } else if (!isLoaded) {
     return <Spinner />;
   } else {
     return (
       <VStack spacing={50}>
-        <Heading>Welcome to the Tower Binder!</Heading>
+        <Heading>{tower.name}</Heading>
         <HStack spacing={3}>{layers}</HStack>
         <Button onClick={() => saveTower(tower)}>Save Tower</Button>
       </VStack>

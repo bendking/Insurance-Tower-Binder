@@ -10,7 +10,7 @@ router
     .get((req, res) => {
         try {
             const tower = towerController.getTower()
-            res.send(JSON.stringify(tower))
+            tower ? res.send(tower) : res.sendStatus(204)
         } catch (err) {
             console.error(err)
             res.status(500).send('Something went wrong. Failed to get tower.')
